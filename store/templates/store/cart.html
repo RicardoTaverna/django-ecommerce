@@ -1,0 +1,73 @@
+{% extends 'store/index.html' %}
+{% load static %}
+
+{% block cart %}
+
+<div class="container">
+	<div class="col l12">
+		<div class="card">
+			<div class="card-content">
+				<span class="activator"><i class="material-icons right">more_vert</i></span>
+				<a class="waves-effect waves-light btn">Continue Shopping</a>
+			</div>
+			<div class="card-reveal">
+				<span class="card-title grey-text text-darken-4">Card Title<i
+						class="material-icons right">close</i></span>
+				<p>Here is some more information about this product that is only revealed once clicked on.</p>
+			</div>
+			<div class="card-action">
+				<div class="row ">
+					<div class="col s4">
+						<h6>Itens: {{ order.get_cart_items }}</h6>
+					</div>
+					<div class="col s4">
+						<h6>Total: ${{ order.get_cart_total|floatformat:2 }}</h6>
+					</div>
+					<div class="col s4">
+						<a class="waves-effect waves-light btn right" href="{% url 'checkout' %}">Checkout</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="col l12">
+		<div class="card">
+			<div class="card-content">
+				<table class="highlight">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Item</th>
+							<th>Price</th>
+							<th>Quantity</th>
+							<th>Total</th>
+						</tr>
+					</thead>
+					{% for item in items %}
+					<tbody>
+						<tr>
+							<td>
+								<img class="materialboxed" width="75" src="{{ item.product.imageURL }}">
+							</td>
+							<td>{{ item.product.name }}</td>
+							<td>{{ item.product.price|floatformat:2 }}</td>
+							<td>
+								<a><i data-product="{{ item.product.id }}" data-action="add" class="material-icons update-cart">arrow_drop_up</i></a>
+								{{ item.quantity }}
+								<a><i data-product="{{ item.product.id }}" data-action="remove" class="material-icons update-cart">arrow_drop_down</i></a>
+							</td>
+							<td>{{ item.get_total }}</td>
+						</tr>
+					</tbody>
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock cart %}

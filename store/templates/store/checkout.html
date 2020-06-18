@@ -1,0 +1,154 @@
+{% extends 'store/index.html' %}
+{% load static %}
+
+{% block checkout %}
+
+
+<div class="row">
+
+    <div class="col s12 m6 l6">
+        <div class="card" id="form-wrapper">
+            <form id="form">
+                <div class="card-content">
+                    <div class="row">
+                        <div id="user-info">
+                            <div class="input-field col s6">
+                                <input id="name" type="text" class="validate">
+                                <label for="name">Name</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="email" type="text" class="validate">
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="shipping-info">
+                        <h5 class="grey-text">Shipping Information</h5>
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <input id="adress" type="text" class="validate" name="address">
+                                <label for="adress">Address</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="city" type="text" class="validate" name="city">
+                                <label for="city">City</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="zipCode" type="text" class="validate" name="zipcode">
+                                <label for="zipCode">Zip Code</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="col l12 waves-effect waves-light btn" id="form-button" type="submit">Continue</button>
+            </form>
+        </div>
+        <div class="hidden" id="payment-info">
+            <div class="card blue-grey">
+                <div class="card-content white-text">
+                  <span class="card-title">Paypal Option</span>                  
+                </div>
+                <div class="card-action">
+                  <button class="btn waves-effect waves-light" id="make-payment">Make Payment</button>                  
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <div class="col s12 m6 l6">
+        <div class="card">
+            <div class="card-action">
+                <a class="waves-effect waves-light btn" href="{% url 'cart' %}">Back to Cart</a>
+            </div>
+            <div class="card-action">
+                <h5 class="grey-text">Order Summary</5>
+            </div>
+            <div class="card-action">
+                <table class="highlight">
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                <img class="materialboxed" width="75" src="{{ item.product.imageURL }}">
+                            </td>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.product.price }}</td>
+                            <td>x{{ item.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-action">
+                <h6>Items: {{ order.get_cart_items }}</h6>
+                <h6>Total: {{ order.get_cart_total|floatformat:2 }}$</h6>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var shipping = '{{ order.shipping }}'
+    var total = '{{ order.get_cart_total|floatformat:2 }}'
+
+    if (shipping == 'False') {
+        document.getElementById('shipping-info').innerHTML = ''
+    }
+
+    if (user != 'AnonymousUser'){
+        document.getElementById('user-info').innerHTML = ''
+    }
+
+    if (shipping == 'False' && user != 'AnonymousUser'){
+        //Hide entire form if user is logged in and shipping is false
+        document.getElementById('form-wrapper').classList.add("hidden");
+        document.getElementById('payment-info').classList.remove("hidden");
+    }
+
+    var form = document.getElementById('form')
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault()
+        console.log('Form submited...')
+        document.getElementById('form-button').classList.add('hidden')
+        document.getElementById('payment-info').classList.remove('hidden')
+
+    })
+
+    document.getElementById('make-payment').addEventListener('click', function(e){
+        submitFormData()
+    })
+
+    function submitFormData(){
+        console.log('Payment button clicked')
+
+        var userFormData = {
+            'name':null,
+            'email':null,
+            'total':total,
+        }
+        
+        var shippingInfo = {
+            'address':null,
+            'city':null,
+            'zipcode':total,
+        }
+
+        if (shipping != 'False'){
+            shippingInfo.address = form.address.value
+            shippingInfo.city = form.address.city
+            shippingInfo.zipcode = form.address.zipcode
+        }
+
+        if (user == 'AnonymousUser'){
+            userFormData.name = form.address.name
+            userFormData.email = form.address.email
+        }
+
+        console.log('Shipping Info: ', shippingInfo)
+        console.log('User Info: ', userFormData)
+    }
+</script>
+
+{% endblock checkout %}
